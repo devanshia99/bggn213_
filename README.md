@@ -1,3 +1,5 @@
-# bggn214
+# Bioinformatics:
 
-Bioinformatics 213 on 11/18/22 at UC San Diego. 
+Topics through the weeks (Fall 2022)
+
+
