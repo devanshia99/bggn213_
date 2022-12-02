@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.189">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Devanshi">
+<meta name="dcterms.date" content="2022-10-14">
+
+<title>Class 6: R functions lab (Grades function)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="lab6_files/libs/clipboard/clipboard.min.js"></script>
+<script src="lab6_files/libs/quarto-html/quarto.js"></script>
+<script src="lab6_files/libs/quarto-html/popper.min.js"></script>
+<script src="lab6_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="lab6_files/libs/quarto-html/anchor.min.js"></script>
+<link href="lab6_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="lab6_files/libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="lab6_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="lab6_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="lab6_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#function-basics" id="toc-function-basics" class="nav-link active" data-scroll-target="#function-basics">Function basics</a></li>
+  <li><a href="#question-1-writing-the-grade-function" id="toc-question-1-writing-the-grade-function" class="nav-link" data-scroll-target="#question-1-writing-the-grade-function">Question 1: Writing the Grade Function</a></li>
+  <li><a href="#question-2-finding-the-top-scoring-student-in-class" id="toc-question-2-finding-the-top-scoring-student-in-class" class="nav-link" data-scroll-target="#question-2-finding-the-top-scoring-student-in-class">Question 2: Finding the top scoring student in class</a></li>
+  <li><a href="#question-3-to-find-which-homework-was-the-toughest-on-students" id="toc-question-3-to-find-which-homework-was-the-toughest-on-students" class="nav-link" data-scroll-target="#question-3-to-find-which-homework-was-the-toughest-on-students">Question 3: To find which homework was the toughest on students</a></li>
+  <li><a href="#question-4-to-find-which-homework-predicted-the-students-overall-score" id="toc-question-4-to-find-which-homework-predicted-the-students-overall-score" class="nav-link" data-scroll-target="#question-4-to-find-which-homework-predicted-the-students-overall-score">Question 4: To find which homework predicted the student’s overall score</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Class 6: R functions lab (Grades function)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Devanshi </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 14, 2022</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="function-basics" class="level1">
+<h1>Function basics</h1>
+<p>All functions in R have three basic parts:</p>
+<p>- A <strong>name</strong> which we can assign</p>
+<p>- <strong>Input arguments</strong> within the function</p>
+<p>- Regular R code for the <strong>body</strong> of the function</p>
+</section>
+<section id="question-1-writing-the-grade-function" class="level1">
+<h1>Question 1: Writing the Grade Function</h1>
+<p>Using this as an example data set to first write the function.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example input vectors to start with</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>student1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">100</span>, <span class="dv">90</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>student2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="cn">NA</span>, <span class="dv">90</span>, <span class="dv">90</span>, <span class="dv">90</span>, <span class="dv">90</span>, <span class="dv">97</span>, <span class="dv">80</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>student3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">90</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Writing the function first before importing the actual data set.</p>
+<p>We can use <strong>‘is.na()’</strong> to convert all NA values to zeroes. We can use <strong>‘which.min()’</strong> to find the position of the lowest score and drop that from our data set. And finally, we can use the ‘mean()’ function to find the mean of this data set.</p>
+<p>Writing this in a function:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>grade1 <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#assigning NAs to be 0s</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  x[ <span class="fu">is.na</span>(x)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#dropping the lowest score in this array</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[<span class="sc">-</span><span class="fu">which.min</span>(x)]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#finding the mean score from this data set</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(x)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The above function should be able to sort through the data set, assign NA scores to 0s and drop one of them or the minimum score, and then calculate the mean.</p>
+<p>The overall grade of student 1 is: 100</p>
+<p>The overall grade of student 2 is: 91</p>
+<p>The overall grade of student 3 is: 12.8571429</p>
+<p>Now, we can import our ‘.csv’ file, and run the ‘grade1()’ function on the data set in this file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gradebook <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://tinyurl.com/gradeinput"</span>, <span class="at">row.names=</span><span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gradebook)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          hw1 hw2 hw3 hw4 hw5
+student-1 100  73 100  88  79
+student-2  85  64  78  89  78
+student-3  83  69  77 100  77
+student-4  88  NA  73 100  76
+student-5  88 100  75  86  79
+student-6  89  78 100  89  77</code></pre>
+</div>
+</div>
+<p>Use the ‘apply()’ function to take another function e.g.&nbsp;the previous ‘grade1()’ function, and apply it to an entire data set.</p>
+<p>An ‘apply()’ function consists of:</p>
+<p>1. the matrix name, in this case “gradebook”</p>
+<p>2. whether we want to sort it by rows or columns, 1 for rows, 2 for columns</p>
+<p>3. the function, either signs or the name in quotes</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#saving the apply matrix as a variable 'results'</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">apply</span>(gradebook, <span class="dv">1</span>, <span class="st">"grade1"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> student-1  student-2  student-3  student-4  student-5  student-6  student-7 
+     91.75      82.50      84.25      84.25      88.25      89.00      94.00 
+ student-8  student-9 student-10 student-11 student-12 student-13 student-14 
+     93.75      87.75      79.00      86.00      91.75      92.25      87.75 
+student-15 student-16 student-17 student-18 student-19 student-20 
+     78.75      89.50      88.00      94.50      82.75      82.75 </code></pre>
+</div>
+</div>
+<p>The grades of the students in this data set are: 91.75, 82.5, 84.25, 84.25, 88.25, 89, 94, 93.75, 87.75, 79, 86, 91.75, 92.25, 87.75, 78.75, 89.5, 88, 94.5, 82.75, 82.75</p>
+</section>
+<section id="question-2-finding-the-top-scoring-student-in-class" class="level1">
+<h1>Question 2: Finding the top scoring student in class</h1>
+<p>Now that we have our ‘results’ saved as a matrix, we can use the ‘which.max()’ function to find the highest scoring student in the class.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mres <span class="ot">&lt;-</span> <span class="fu">which.max</span>(results)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The highest scoring student in this class is: Student 18</p>
+</section>
+<section id="question-3-to-find-which-homework-was-the-toughest-on-students" class="level1">
+<h1>Question 3: To find which homework was the toughest on students</h1>
+<p>We can use the ‘apply()’ function in this case to take the average of each column, and choose the lowest average.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#writing another apply function to choose the columns </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#and remove NAs</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>hwresults <span class="ot">&lt;-</span> <span class="fu">apply</span>(gradebook, <span class="dv">2</span>, sum, <span class="at">na.rm=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The lowest overall homework was: Homework 2</p>
+</section>
+<section id="question-4-to-find-which-homework-predicted-the-students-overall-score" class="level1">
+<h1>Question 4: To find which homework predicted the student’s overall score</h1>
+<p>This is helpful to know to get an idea of how to model tests and write future homework.</p>
+<p>We can use the ‘cor()’ function to correlate the student’s weekly homework scores with their overall scores.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#to convert NA scores in 'gradebook' to 0s</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mask <span class="ot">&lt;-</span> gradebook</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>mask[<span class="fu">is.na</span>(mask)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#use apply function to compare results with each </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#column in mask</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>correlation <span class="ot">&lt;-</span> <span class="fu">apply</span>(mask, <span class="dv">2</span>, cor, <span class="at">y=</span>results)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#find the highest correlation of all the homework</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>hcor <span class="ot">&lt;-</span> <span class="fu">which.max</span>(correlation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The homework that best predicted the students’ overall score was: Homework 5</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

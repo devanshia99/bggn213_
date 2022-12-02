@@ -1,0 +1,123 @@
+---
+title: "Class 6: R functions lab (Grades function)"
+author: "Devanshi"
+format: html
+editor: visual
+date: 2022-10-14
+toc: true
+theme: darkly
+---
+
+# Function basics
+
+All functions in R have three basic parts:
+
+\- A **name** which we can assign
+
+\- **Input arguments** within the function
+
+\- Regular R code for the **body** of the function
+
+# Question 1: Writing the Grade Function
+
+Using this as an example data set to first write the function.
+
+```{r}
+# Example input vectors to start with
+student1 <- c(100, 100, 100, 100, 100, 100, 100, 90)
+student2 <- c(100, NA, 90, 90, 90, 90, 97, 80)
+student3 <- c(90, NA, NA, NA, NA, NA, NA, NA)
+```
+
+Writing the function first before importing the actual data set.
+
+We can use **'is.na()'** to convert all NA values to zeroes. We can use **'which.min()'** to find the position of the lowest score and drop that from our data set. And finally, we can use the 'mean()' function to find the mean of this data set.
+
+Writing this in a function:
+
+```{r}
+grade1 <- function(x) {
+  #assigning NAs to be 0s
+  x[ is.na(x)] <- 0
+  #dropping the lowest score in this array
+  x <- x[-which.min(x)]
+  #finding the mean score from this data set
+  mean(x)
+}
+```
+
+The above function should be able to sort through the data set, assign NA scores to 0s and drop one of them or the minimum score, and then calculate the mean.
+
+The overall grade of student 1 is: `r grade1(student1)`
+
+The overall grade of student 2 is: `r grade1(student2)`
+
+The overall grade of student 3 is: `r grade1(student3)`
+
+Now, we can import our '.csv' file, and run the 'grade1()' function on the data set in this file.
+
+```{r}
+gradebook <- read.csv("https://tinyurl.com/gradeinput", row.names=1)
+head(gradebook)
+```
+
+Use the 'apply()' function to take another function e.g. the previous 'grade1()' function, and apply it to an entire data set.
+
+An 'apply()' function consists of:
+
+1\. the matrix name, in this case "gradebook"
+
+2\. whether we want to sort it by rows or columns, 1 for rows, 2 for columns
+
+3\. the function, either signs or the name in quotes
+
+```{r}
+#saving the apply matrix as a variable 'results'
+results <- apply(gradebook, 1, "grade1")
+results
+```
+
+The grades of the students in this data set are: `r results`
+
+# Question 2: Finding the top scoring student in class
+
+Now that we have our 'results' saved as a matrix, we can use the 'which.max()' function to find the highest scoring student in the class.
+
+```{r}
+mres <- which.max(results)
+```
+
+The highest scoring student in this class is: Student `r mres`
+
+# Question 3: To find which homework was the toughest on students
+
+We can use the 'apply()' function in this case to take the average of each column, and choose the lowest average.
+
+```{r}
+#writing another apply function to choose the columns 
+#and remove NAs
+hwresults <- apply(gradebook, 2, sum, na.rm=TRUE)
+```
+
+The lowest overall homework was: Homework `r which.min(hwresults)`
+
+# Question 4: To find which homework predicted the student's overall score
+
+This is helpful to know to get an idea of how to model tests and write future homework.
+
+We can use the 'cor()' function to correlate the student's weekly homework scores with their overall scores.
+
+```{r}
+#to convert NA scores in 'gradebook' to 0s
+mask <- gradebook
+mask[is.na(mask)] <- 0
+
+#use apply function to compare results with each 
+#column in mask
+correlation <- apply(mask, 2, cor, y=results)
+
+#find the highest correlation of all the homework
+hcor <- which.max(correlation)
+```
+
+The homework that best predicted the students' overall score was: Homework `r hcor`

@@ -1,0 +1,68 @@
+---
+title: "hw_week3"
+author: "Devanshi"
+format: pdf
+date: 2022-10-14
+toc: true
+---
+
+# Homework: Simplifying the given chunk of code
+
+First, install the pdb package
+
+```{r}
+#install.packages("bio3d")
+```
+
+## Given code:
+The code that needs to be simplified:
+```{r}
+library(bio3d)
+
+#including protein names
+s1 <- read.pdb("4AKE") # kinase with drug
+s2 <- read.pdb("1AKE") # kinase no drug
+s3 <- read.pdb("1E4Y") # kinase with drug
+
+#extracting the A chain from each protein
+s1.chainA <- trim.pdb(s1, chain="A", elety="CA")
+s2.chainA <- trim.pdb(s2, chain="A", elety="CA")
+s3.chainA <- trim.pdb(s3, chain="A", elety="CA")
+
+#extracting atom b from the A chain
+s1.b <- s1.chainA$atom$b
+s2.b <- s2.chainA$atom$b
+s3.b <- s3.chainA$atom$b
+
+#plotting b
+plotb3(s1.b, sse=s1.chainA, typ="l", ylab="Bfactor")
+plotb3(s2.b, sse=s2.chainA, typ="l", ylab="Bfactor")
+plotb3(s3.b, sse=s3.chainA, typ="l", ylab="Bfactor")
+
+```
+
+## Simplified code
+Simplifying the above function by condensing three lines of code into a singular function. 
+```{r}
+library(bio3d)
+
+pdb_plot <-function(x) {
+  #reading the pdb file to store it in x
+  x <- read.pdb(x)
+  #extracting chain A
+  x.chainA <- trim.pdb(x, chain="A", elety="CA")
+  #extracting atom b (Bfactor) from chain A
+  x.b <- x.chainA$atom$b
+  #plotting the B atom factors against the chain residues as a line graph
+  plotb3(x.b, sse=x.chainA, typ="l", ylab="Bfactor")
+}
+
+```
+
+Now, a user can input the 4 digit PDB code within the function ***'pdb_plot()'*** to get a plot of the B factor vs Residue on the A chain. 
+e.g.
+```{r}
+pdb_plot("1AKE")
+```
+
+
