@@ -1,3 +1,6 @@
-# bggn213
+# BGGN 213: Introduction to Bioinformatics
 
-Bioinformatics 213 on 11/18/22 at UC San Diego. 
+My work for [Bioinformatics Class](https://bioboot.github.io/bggn213_F22/) Fall 2022 at UC San Diego. 
+
+- Class 04: [Introduction to R] (). 
+- Class 10: [Principle Component Analysis of Candy](). 
