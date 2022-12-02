@@ -2,7 +2,7 @@
 
 My work for [Bioinformatics Class](https://bioboot.github.io/bggn213_F22/) Fall 2022 at UC San Diego. 
 
-- Class 04: [Introduction to R](). 
+- Class 06: [Introduction to R functions](). 
 - Class 09: [Structural Bioinformatics using Bio3d](). 
 - Class 10: [Principle Component Analysis of Candy](). 
 - Class 12: [Transcriptomics and RNA seq using Biocmanager and DESeq2](). 
