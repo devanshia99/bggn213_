@@ -1,0 +1,352 @@
+---
+title: "Lab 12: Transcriptomics and RNA-seq"
+author: "Devanshi"
+format: html
+toc: true
+date: 2022-11-04
+---
+
+# Installing packages
+
+To start off, we need to install some Bioconductor packages to access the data. The code for this is:
+
+```{r}
+#install.packages("BiocManager")
+#BiocManager::install()
+
+#BiocManager::install("DESeq2")
+```
+
+Call the liibrary
+
+```{r message=FALSE}
+#library(BiocManager)
+library(DESeq2)
+```
+
+# Importing the Count Data
+
+```{r}
+counts <- read.csv("airway_scaledcounts.csv", row.names=1)
+metadata <-  read.csv("airway_metadata.csv")
+head(counts)
+head(metadata)
+```
+
+Genes in this dataset:
+
+```{r}
+dim(counts)
+dim(metadata)
+```
+
+There are 38694 genes in this dataset. There are 4 controls in this dataset.
+
+# Looking at Different gene expression
+
+Considering `metadata`. We can find the sample IDs and mean counts per gene in these samples using the `dplyr` package.
+
+```{r}
+library(dplyr)
+
+control <- metadata %>% filter(dex=="control")
+control.counts <- counts %>% select(control$id)
+control.mean <- rowSums(control.counts)/4
+head(control.mean)
+```
+
+This shows the mean counts per gene in the samples.
+
+We can do the same for the treated samples.
+
+```{r}
+treated <- metadata %>% filter(dex=="treated")
+treated.counts <- counts %>% select(treated$id)
+treated.mean <- rowSums(treated.counts)/4
+head(treated.mean)
+```
+
+We can combine the mean counts for both the control and treated groups into a data frame.
+
+```{r}
+meancounts <- data.frame(control.mean, treated.mean)
+```
+
+We can use `colSums()` to find the sums of the mean gene counts in each of the control and treated groups.
+
+```{r}
+colSums(meancounts)
+```
+
+We can also create a Scatter plot for this data frame to compare control and treated mean data.
+
+```{r}
+library(ggplot2)
+ggplot(meancounts) + aes(x=control.mean, y=treated.mean, alpha=0.4) + geom_point()
+```
+
+Making this on a logarithmic scale
+
+```{r}
+ggplot(meancounts) + aes(x=control.mean, y=treated.mean, alpha=0.4) + geom_point(show.legend = F) + scale_x_continuous(trans='log2') + scale_y_continuous(trans='log2')
+```
+
+It would be helpful to save these natural log results within the `meancounts` data set.
+
+```{r}
+meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+```
+
+To get rid of the NaN and Inf results.
+
+```{r}
+zero.vals <- which(meancounts[,1:2]==0, arr.ind=T)
+
+to.rm <- unique(zero.vals[,1])
+mycounts <- meancounts[-to.rm,]
+head(mycounts)
+
+```
+
+We have `r nrow(mycounts)` genes remaining
+
+It's important to use the `arr.ind` argument within the which function to return the position indices which have zero values. It's important to use the `unique` function to avoid repeating rows and removing those values.
+
+To check for differentially expressed genes, we can check which ones are \>2 or \<-2. We can find genes that are up or down regulated in this manner.
+
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+sum(up.ind==T)
+sum(down.ind==T)
+```
+
+From these vectors, we can see that there are 250 upregulated and 367 downregulated genes with the parameters we previously defined. These results however are not very trustworthy because there is no statistical significance that has been performed on the log fold change values yet to draw any conclusions on whether these genes are truly up or down regulated.
+
+# Using DESeq 2 to look at gene data
+
+This is a better method of looking at large data sets.
+
+```{r}
+library(DESeq2)
+citation("DESeq2")
+# to see where this package came from
+```
+
+We can use the DESeq package directly to add our data, and organise by dex to differentiate between control and treated samples.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex)
+dds
+```
+
+We can now run the DESeq function on our new data set, before displaying results from it.
+
+```{r}
+dds <- DESeq(dds)
+```
+
+We can now get results from these data.
+
+```{r}
+res <- results(dds)
+res
+```
+
+To view this data set:
+
+```{r}
+res.df <- as.data.frame(res)
+View(res.df)
+```
+
+Looking at a summary of the results:
+
+```{r}
+summary(res)
+```
+
+We can change the p-value to be 0.05 by changing the `alpha` argument.
+
+```{r}
+res05 <- results(dds, alpha=0.05)
+summary(res05)
+```
+
+# Add Annotation Data
+
+We can also add some gene names and annotations to our data to make it more meaningful using the `AnnotationsDbi` package. Make sure to install the BiocManager packages in the console.
+
+```{r message=FALSE}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+
+The "org.Hs.eg.db" package shows genes from *Homo sapiens* across various databases.
+
+```{r}
+columns(org.Hs.eg.db)
+```
+
+We can use the `mapIDs` function to add rows to our data results from above. 
+
+```{r}
+# adding the ENSEMBL data column SYMBOL
+res$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(res), # gene names
+                     keytype="ENSEMBL",        # format of gene names
+                     column="SYMBOL",          # new format
+                     multiVals="first")
+# adding ENTREZ ID
+res$entrez <- mapIds(org.Hs.eg.db, keys=row.names(res), keytype="ENSEMBL", 
+                     column="ENTREZID", multiVals = "first")
+
+# adding UniProt accession
+res$uniprot <- mapIds(org.Hs.eg.db, keys = row.names(res), keytype = "ENSEMBL",
+                      column = "UNIPROT", multiVals = "first")
+
+# adding gene name
+res$genename <- mapIds(org.Hs.eg.db, keys = row.names(res), keytype = "ENSEMBL",
+                       column = "GENENAME", multiVals = "first")
+
+head(res)
+```
+
+We can now order the results based on the p-value and view them.
+
+```{r}
+ord <- order(res$padj)
+View(res[ord,])
+head(res[ord,])
+```
+
+We can now save our ordered results in a csv file using the `write.csv` function. 
+
+```{r}
+write.csv(res[ord,], "deseq_results.csv")
+```
+
+# Data Visualisation
+
+We can visualise these data as a volcano plot. 
+
+```{r}
+plot(res$log2FoldChange, -log(res$padj), xlab = "Log2(FoldChange)", 
+     ylab = "-Log(P-value)")
+```
+
+We can add some 'ablines' to make this a bit more meaningful in terms of our up and down regulation cut offs.
+
+```{r}
+plot(res$log2FoldChange, -log(res$padj), xlab = "Log2(FoldChange)", 
+     ylab = "-Log(P-value)")
+
+abline(v=c(-2,2), col="darkgray", lty=2)
+abline(h=-log(0.05), col="darkgray", lty=2)
+```
+
+We can also add colors to this plot to make it more meaningful.
+
+```{r}
+mycols <- rep("gray", nrow(res))
+mycols[abs(res$log2FoldChange) > 2] <- "red"
+
+inds <- (res$padj<0.01) & (abs(res$log2FoldChange)>2)
+mycols[inds] <- "blue"
+
+plot(res$log2FoldChange, -log(res$padj), col = mycols, 
+     xlab = "Log2(FoldChange)", ylab = "-Log(P-value)")
+
+abline(v=c(-2,2), col="darkgray", lty=2)
+abline(h=-log(0.05), col="darkgray", lty=2)
+```
+
+## Enhanced Volcano Plot
+
+We can use the Enhanced Volcano Plot function to clean up the above volcano plot and add labels as well.
+
+Make sure to install the BiocManager package for this function.
+
+```{r}
+library(EnhancedVolcano)
+
+x <- as.data.frame(res)
+
+EnhancedVolcano(x, lab=x$symbol, x='log2FoldChange', y='pvalue')
+```
+
+This plot is a lot more meaningful in terms of looking at our data. 
+
+
+-------------------------------------------------------------------
+
+# Pathway Analysis
+
+Install the Biocmanager packages for this analysis function. 
+
+```{r}
+library(pathview)
+library(gage)
+library(gageData)
+
+# this contaings kegg pathways 
+data(kegg.sets.hs)
+
+# Examine the first 2 pathways in this kegg set for humans
+head(kegg.sets.hs, 2)
+```
+Now we can analyse our own data through this.
+
+```{r}
+foldchanges <- res$log2FoldChange
+names(foldchanges) <- res$entrez
+head(foldchanges)
+```
+
+We can now run the *gage* pathway.
+
+```{r}
+keggres <- gage(foldchanges, gsets = kegg.sets.hs)
+```
+
+Understanding the features of this *gage* object
+
+```{r}
+attributes(keggres)
+```
+
+Looking into this object.
+
+```{r}
+head(keggres$less, 3)
+```
+
+Now, we can use the `pathview()` function to actually visualise the asthma pathway.
+
+```{r}
+pathview(gene.data = foldchanges, pathway.id = "hsa05310")
+# asthma pathway ID from above
+```
+
+![The Asthma pathway with genes](hsa05310.pathview.png)
+
+Doing the same for Graft-versus-host disease. 
+
+```{r message=FALSE}
+pathview(gene.data = foldchanges, pathway.id = "hsa05332", kegg.native = F)
+# kegg.native = F gives a Pdf of the pathway
+```
+
+![The Graft vs Host disease pathway](hsa05332.pathview.png)
+
+And finally for Type 1 diabetes.
+
+```{r message=FALSE}
+pathview(gene.data = foldchanges, pathway.id = "hsa04940")
+```
+
+![The Type-1 Diabetes pathway](hsa04940.pathview.png)
+

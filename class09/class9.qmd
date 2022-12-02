@@ -1,0 +1,78 @@
+---
+title: "Class 9"
+author: "Devanshi"
+format: html
+---
+
+# Intro to PDB (skip section 1)
+
+Download a `.csv` file from the PDB website to answer a few questions. 
+```{r}
+pdbfile <- read.csv("Data Export Summary.csv", row.names=1, )
+xray <- pdbfile$Xray
+xray <- as.integer(xray, gsub(",","", xray))
+xray
+```
+
+> Q1: What percentage of structures in the PDB are solved by X-Ray and Electron Microscopy.
+
+```{r}
+
+```
+
+
+> Q2: What proportion of structures in the PDB are protein?
+
+> Q3: Type HIV in the PDB website search box on the home page and determine how many HIV-1 protease structures are in the current PDB?
+
+# Section 2: Visualising HIV-1 Protease structure
+
+We can use Mol* to visualize the HIV-1 3D structure properly. 
+
+![](1HSG.png)
+
+
+
+# Introduction to Bio3D in R
+
+The `Bio3D` package for structural bioinformatics enables us to read and work with biomolecules, on a more structural level. 
+
+
+```{r}
+library(bio3d)
+#calling the packages
+pdb <- read.pdb("1hsg")
+pdb
+```
+
+There are 198 amino acids in this protein.
+The non-nucleic compounds are: water and the Merck-1 compound. 
+There are 2 protein chains in this structure. 
+
+```{r}
+head(pdb$atom)
+```
+
+Looking at another structure adenyl kinase
+```{r}
+adk <- read.pdb("6s36")
+adk
+```
+There are 214 amino acids in this. 
+
+These are proteins "stuck" in time. It would be helpful to understand the flexibility of these proteins. 
+
+## Normal Mode Analysis
+This is a bioinformatics tool for predicting functional motions. It helps in understanding the flexibility of proteins. We can use the function `nma()` to do this. 
+
+```{r}
+m <- nma(adk)
+plot(m)
+```
+
+
+
+
+
+
+

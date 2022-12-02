@@ -1,0 +1,148 @@
+---
+title: "Class 9: Structural Bioinformatics"
+author: "Devanshi"
+format: pdf
+toc: true
+date: 2022-10-26
+---
+
+# Intro to PDB (skip section 1)
+
+Download a `.csv` file from the PDB website to answer a few questions. 
+```{r}
+pdbfile <- read.csv("Data Export Summary.csv", row.names=1, )
+head(pdbfile)
+```
+
+
+# Section 2: Visualising HIV-1 Protease structure
+
+We can use Mol* to visualize the HIV-1 3D structure properly. 
+
+![](1HSG.png)
+
+
+# Introduction to Bio3D in R
+
+The `Bio3D` package for structural bioinformatics enables us to read and work with biomolecules, on a more structural level. 
+
+```{r}
+library(bio3d)
+#calling the packages
+pdb <- read.pdb("1hsg")
+pdb
+```
+
+There are 198 amino acids in this protein.
+The non-nucleic compounds are: water and the Merck-1 compound. 
+There are 2 protein chains in this structure. 
+
+```{r}
+head(pdb$atom)
+```
+
+Looking at another structure adenyl kinase
+```{r}
+adk <- read.pdb("6s36")
+adk
+```
+There are 214 amino acids in this. 
+
+These are proteins "stuck" in time. It would be helpful to understand the flexibility of these proteins. 
+
+## Normal Mode Analysis
+This is a bioinformatics tool for predicting functional motions. It helps in understanding the flexibility of proteins. We can use the function `nma()` to do this. 
+
+```{r}
+m <- nma(adk)
+plot(m)
+```
+The fluctuation peaks are the most 'flexible' regions. 
+
+We can also make animations of the motions of this protein. The `mktrj()` function does this. 
+
+```{r}
+mktrj(m, file="adk_nma.pdb")
+```
+
+We can open this file on Mol* to see the complete animation. 
+
+
+# Comparative analysis of all ADK structures
+
+We can use the `get.seq()` function in R and use BLAST to search for other sequences that are similar using the `blast.pdb()` function. This will generate homologs which we can collect using the `get.pdb()` function. 
+
+```{r}
+aa <- get.seq("1ake_A")
+aa
+```
+
+```{r}
+# blasting this
+blast <- blast.pdb(aa)
+```
+
+```{r}
+# plotting the hits
+hits <- plot(blast)
+```
+
+```{r}
+# to know the structures of the good hits
+hits$pdb.id
+
+# to know more about the annotations etc
+pdb.annotate(hits$pdb.id)
+```
+
+```{r}
+# using the get function to download the good hit files
+# path makes a new folder
+# split splits them by chain
+# gzip zips the file
+files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
+```
+
+We can also align and superpose our structures using `pdbaln()`
+
+```{r}
+# fit 
+pdbs <- pdbaln(files, fit=T,
+               exefiles="msa")
+ids <- basename.pdb(pdbs$id)
+
+#plotting the schematic
+plot(pdbs, labels=ids)
+```
+
+
+## Using PCA to analyse the hits
+
+We can use PCA to help categorize these files properly.
+
+```{r}
+pc.xray <- pca(pdbs)
+
+#plotting this PCA
+plot(pc.xray)
+```
+
+We can also visualise our PC1 using Mol*. 
+
+```{r}
+# using mktrj to create an animations
+pc1 <- mktrj(pc.xray, pc=1, file="pc_1.pdb")
+```
+
+
+## NMA on the various sequences
+
+We can calculate NMAs of all the different pdbs. 
+
+```{r}
+modes <- nma(pdbs)
+
+#plotting this
+plot(modes, pdbs)
+```
+
